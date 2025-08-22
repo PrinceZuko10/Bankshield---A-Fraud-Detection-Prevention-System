@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('https://wallpaperaccess.com/full/4893732.jpg'); 
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+        }
+
+        h1 {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #ffffff;
+            font-size: 2rem;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7); 
+        }
+
+        .container {
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.2); 
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: none;
+            color: #fff;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: rgba(255, 255, 255, 0.7); 
+            color: #333;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px 0;
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        button:hover {
+            background-color: rgba(255, 255, 255, 0.9); 
+        }
+
+        .account-info {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid rgba(10, 10, 10, 0.7); 
+            border-radius: 4px;
+            background-color: rgba(255, 255, 255, 0.2); 
+            color: #070707;
+        }
+
+        .account-info p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Account Dashboard</h1>
+    <div class="container">
+        <div class="account-info">
+            <h2>Account Information</h2>
+            <p><strong>Account Number:</strong> <span id="accountNumber"></span></p>
+            <p><strong>Name:</strong> <span id="accountName"></span></p>
+            <p><strong>Balance:</strong> <span id="accountBalance"></span></p>
+        </div>
+
+        <button onclick="goToTransactionHistory()">View Transaction History</button>
+        <button onclick="goToTransferMoney()">Transfer Money</button>
+    </div>
+
+    <script>
+        
+        const accountData = JSON.parse(localStorage.getItem('accountData'));
+        const accountNo = accountData ? accountData.account_no : null;
+
+        if (!accountNo) {
+            alert('No account found. Please log in first.');
+            window.location.href = '/';
+        }
+
+        
+        document.getElementById('accountNumber').textContent = accountData.account_no;
+        document.getElementById('accountName').textContent = accountData.name;
+        document.getElementById('accountBalance').textContent = accountData.bank_balance;
+
+      
+        function goToTransactionHistory() {
+            window.location.href = `transaction-history.html?accountNo=${accountNo}`;
+        }
+
+        function goToTransferMoney() {
+            window.location.href = `transfer.html?accountNo=${accountNo}`;
+        
+        }
+    </script>
+</body>
+</html>

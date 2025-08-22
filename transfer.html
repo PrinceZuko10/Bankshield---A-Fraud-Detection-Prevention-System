@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transfer Money</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('https://wallpaperaccess.com/full/4893732.jpg'); /* Replace with your image link */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        h1 {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #ffffff;
+            font-size: 2rem;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+        }
+
+        .container {
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: none;
+            color: #fff;
+        }
+
+        input, select {
+            width: 95%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        select {
+            color: #000;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.7);
+            color: #333;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        button:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+
+        .result {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            border-radius: 4px;
+            color: #fff;
+        }
+
+        .timer {
+            font-size: 1.2rem;
+            color: red;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Transfer Money</h1>
+    <div class="container">
+        <div>
+            <label for="recipientAccount">Recipient Account Number:</label>
+            <input type="text" id="recipientAccount" placeholder="Enter recipient account number">
+
+            <label for="amount">Amount:</label>
+            <input type="number" id="amount" placeholder="Enter transaction amount">
+
+            <label for="transactionType">Transaction Type:</label>
+            <select id="transactionType">
+                <option value="Cinema">Cinema</option>
+                <option value="Mall">Mall</option>
+                <option value="Doctor">Doctor</option>
+                <option value="Shop">Shop</option>
+                <option value="Transfer">Transfer</option>
+                <option value="Water Park">Water Park</option>
+                <option value="Bank">Bank</option>
+                <option value="Other">Other (Specify)</option>
+            </select>
+            <input type="text" id="otherTransactionType" placeholder="Specify transaction type" style="display:none;">
+
+            <label for="transactionMethod">Transaction Method:</label>
+            <select id="transactionMethod">
+                <option value="PayPal">PayPal</option>
+                <option value="PhonePay">PhonePay</option>
+                <option value="Google Pay">Google Pay</option>
+                <option value="Other">Other (Specify)</option>
+            </select>
+            <input type="text" id="otherTransactionMethod" placeholder="Specify transaction method" style="display:none;">
+
+            <button onclick="performTransfer()">Transfer Money</button>
+        </div>
+
+        <div class="result" id="transferResult"></div>
+        <div class="timer" id="timerDisplay" style="display: none;"></div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const accountNo = urlParams.get('accountNo');
+        
+        if (!accountNo) {
+            alert('No account number provided.');
+            window.location.href = '/';
+        }
+    
+        document.getElementById('transactionType').addEventListener('change', function () {
+            const otherTransactionType = document.getElementById('otherTransactionType');
+            if (this.value === 'Other') {
+                otherTransactionType.style.display = 'block';
+            } else {
+                otherTransactionType.style.display = 'none';
+            }
+        });
+    
+        document.getElementById('transactionMethod').addEventListener('change', function () {
+            const otherTransactionMethod = document.getElementById('otherTransactionMethod');
+            if (this.value === 'Other') {
+                otherTransactionMethod.style.display = 'block';
+            } else {
+                otherTransactionMethod.style.display = 'none';
+            }
+        });
+    
+        async function performTransfer() {
+            const recipientAccount = document.getElementById('recipientAccount').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const transactionType = document.getElementById('transactionType').value === 'Other'
+                ? document.getElementById('otherTransactionType').value
+                : document.getElementById('transactionType').value;
+            const transactionMethod = document.getElementById('transactionMethod').value === 'Other'
+                ? document.getElementById('otherTransactionMethod').value
+                : document.getElementById('transactionMethod').value;
+        
+            if (!recipientAccount || isNaN(amount) || amount <= 0 || !transactionType || !transactionMethod) {
+                alert('Please fill in all fields.');
+                return;
+            }
+    
+            
+            document.getElementById('transferResult').textContent = '';
+            document.getElementById('timerDisplay').style.display = 'block';
+    
+            
+            let countdown = 15;
+            const timerInterval = setInterval(() => {
+                document.getElementById('timerDisplay').textContent = `Please wait ${countdown--} seconds...`;
+                if (countdown < 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('timerDisplay').textContent = 'Transaction complete.';
+                }
+            }, 1000);
+    
+            try {
+                const response = await fetch(`http://localhost:3843/api/transfer/${accountNo}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        recipientAccount,
+                        amount,
+                        transactionType,
+                        transactionMethod
+                    })
+                });
+    
+                if (!response.ok) {
+                    throw new Error('Failed to process the transaction.');
+                }
+    
+                const message = await response.text();
+                document.getElementById('transferResult').textContent = message;
+    
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+    </script>
+    
+</body>
+</html>

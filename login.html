@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('https://wallpaperaccess.com/full/4893732.jpg'); 
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+        }
+        
+        h1 {
+            position: absolute;
+            top: 180px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #ffffff;
+            font-size: 2rem;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7); 
+        }
+        
+        .login-container {
+            max-width: 400px;
+            background: none; 
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: none; 
+        }
+        
+
+        .login-container input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid rgba(255, 255, 255, 0.7); 
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff; 
+            font-size: 1rem;
+        }
+
+        .login-container input::placeholder {
+            color: rgba(255, 255, 255, 0.8); 
+        }
+
+        .login-container button {
+            width: 105%;
+            padding: 10px;
+            background-color: rgb(229, 236, 229); 
+            color: rgb(7, 58, 18);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .login-container button:hover {
+            background-color: rgb(7, 52, 7); 
+        }
+    </style>
+</head>
+<body>
+    <h1>Login Your Account</h1>
+    <div class="login-container">
+        <input type="text" id="accountNo" placeholder="Enter Account Number" required>
+        <input type="password" id="password" placeholder="Enter Password" required>
+        <button onclick="login()">Login</button>
+    </div>
+
+    <script>
+        function login() {
+            const accountNo = document.getElementById('accountNo').value;
+            const password = document.getElementById('password').value;
+
+            if (!accountNo || !password) {
+                alert('Please enter both account number and password.');
+                return;
+            }
+
+            fetch('http://localhost:3843/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ accountNo, password }),
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json(); 
+                } else {
+                    return response.text().then(errMsg => {
+                        throw new Error(errMsg);
+                    });
+                }
+            })
+            .then(data => {
+                localStorage.setItem('accountData', JSON.stringify(data));
+                window.location.href = 'account.html';
+            })
+            .catch(error => {
+                alert('Error: ' + error.message);
+            });
+        }
+    </script>
+</body>
+</html>
